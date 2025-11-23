@@ -1,0 +1,13 @@
+// package.json (root)
+{
+  "name": "pingnow",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "start": "netlify dev",
+    "deploy": "netlify deploy --prod"
+  },
+  "devDependencies": {
+    "netlify-cli": "^14.0.0"
+  }
+}

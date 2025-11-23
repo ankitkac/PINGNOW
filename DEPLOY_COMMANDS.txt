@@ -1,0 +1,80 @@
+=== NETLIFY/functions/api.js ===
+const serverless = require('serverless-http');
+const app = require('../../server/server');
+
+exports.handler = serverless(app);
+
+=== NETLIFY.TOML (root) ===
+[build]
+  command = "npm run build"
+  publish = "client/build"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+=== CLIENT/PUBLIC/_REDIRECTS ===
+/api/*  /.netlify/functions/api/:splat  200
+/*      /index.html                    200
+
+=== ROOT PACKAGE.JSON ===
+{
+  "name": "pingnow",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "start": "netlify dev",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
+
+=== SERVER/SERVER.JS (BOTTOM) ===
+if (process.env.NODE_ENV !== 'netlify') {
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
+
+=== DEPLOY COMMANDS ===
+
+# Install dependencies
+npm install
+cd server && npm install && cd ..
+cd client && npm install && cd ..
+
+# Deploy via Netlify CLI
+npm install -g netlify-cli
+netlify login
+netlify init
+netlify deploy --prod
+
+# OR Deploy via GitHub
+git add .
+git commit -m "Netlify deployment ready"
+git push origin main
+
+# Then on Netlify Dashboard:
+# 1. New site from Git
+# 2. Connect repository
+# 3. Build settings auto-detected
+# 4. Deploy
+
+=== ENVIRONMENT VARIABLES (Netlify Dashboard) ===
+NODE_ENV=netlify
+JWT_SECRET=your-secret-key-here
+CORS_ORIGIN=https://your-site.netlify.app
+
+=== DONE ===

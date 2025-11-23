@@ -1,0 +1,66 @@
+=== UPDATED FILES ===
+
+1. netlify.toml
+[build]
+  command = "cd server && npm install && cd .. && npm --prefix client install && npm --prefix client run build"
+  publish = "client/build"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["express", "socket.io", "bcryptjs", "jsonwebtoken", "multer", "cors"]
+
+2. .nvmrc (NEW FILE - root)
+18
+
+3. package.json (root)
+{
+  "name": "pingnow",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd server && npm install && cd .. && cd client && npm install && npm run build",
+    "start": "netlify dev",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "serverless-http": "^3.2.0",
+    "express": "^4.18.2",
+    "socket.io": "^4.6.0",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
+
+=== DEPLOY COMMANDS ===
+
+# Clean install
+rm -rf node_modules client/node_modules server/node_modules
+npm install
+
+# Deploy
+git add .
+git commit -m "Fixed Netlify build"
+git push
+
+# OR CLI
+netlify deploy --prod
+
+=== IF STILL FAILS ===
+
+Run locally first:
+cd client
+npm install
+npm run build
+
+If error appears, paste full error here.

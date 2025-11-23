@@ -1,0 +1,43 @@
+=== FINAL FIXES APPLIED ===
+
+1. netlify.toml - Added memory limit and CI=false
+[build]
+  command = "cd server && npm install && cd .. && npm --prefix client install && npm --prefix client run build"
+  publish = "client/build"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_OPTIONS = "--max_old_space_size=4096"
+  CI = "false"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["express", "socket.io", "bcryptjs", "jsonwebtoken", "multer", "cors"]
+
+2. client/.env.production - Disable sourcemaps
+GENERATE_SOURCEMAP=false
+DISABLE_ESLINT_PLUGIN=true
+
+3. client/src/config.js - Fixed URLs
+export const API_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000');
+export const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || (process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:5000');
+
+=== DEPLOY NOW ===
+
+git add .
+git commit -m "Final Netlify fixes"
+git push
+
+=== IF STILL FAILS ===
+
+Test locally:
+cd client
+npm install
+npm run build
+
+Copy FULL error output and paste here.
